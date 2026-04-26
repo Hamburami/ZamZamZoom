@@ -1,13 +1,14 @@
 using System.Collections.Generic;
 using System.Linq;
 
-// Single Responsibility Race controls race flow and winner logic
+// Single Responsibility: Race controls race flow and winner logic
 
 public class Race
 {
     private readonly RaceTrack _track;
     private readonly List<Racer> _racers;
     private readonly List<IRaceObserver> _observers;
+    private readonly IRaceEventGenerator _eventGenerator;
 
     private readonly float _targetDistance;
 
@@ -15,10 +16,16 @@ public class Race
     public Racer Winner { get; private set; }
 
     public Race(RaceTrack track, List<Racer> racers, int lapCount)
+        : this(track, racers, lapCount, new NullRaceEventGenerator())
+    {
+    }
+
+    public Race(RaceTrack track, List<Racer> racers, int lapCount, IRaceEventGenerator eventGenerator)
     {
         _track = track;
         _racers = racers;
         _observers = new List<IRaceObserver>();
+        _eventGenerator = eventGenerator;
         _targetDistance = track.Length * lapCount;
     }
 
@@ -42,6 +49,7 @@ public class Race
 
         foreach (Racer racer in _racers)
         {
+            _eventGenerator.TryApplyEvent(racer, deltaTime);
             racer.Move(deltaTime);
 
             if (racer.DistanceTravelled >= _targetDistance)

@@ -31,4 +31,17 @@ public class LeaderboardUI : MonoBehaviour, IRaceObserver
 
         winnerText.text = $"Winner: {winner.Name}";
     }
+
+    public void Clear()
+    {
+        if (standingsText != null)
+        {
+            standingsText.text = "Standings";
+        }
+
+        if (winnerText != null)
+        {
+            winnerText.text = "";
+        }
+    }
 }
